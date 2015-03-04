@@ -55,16 +55,14 @@ var ball = {
   y: player.y - 10,
   xVelocity: -1,
   yVelocity: 1,
-  width: 10,
-  height: 10,
+  radius: 10,
   _checkCollisions: function(context) {
-    if (ball.x <= 0 || ball.x >= WIDTH) {
+    if (ball.x === 0 || ball.x === WIDTH) {
       return 'verticalCollision';
-    } else if (ball.y <= 0 || ball.y >= HEIGHT) {
+    } else if (ball.y === 0 || ball.y === HEIGHT) {
       return 'horizontalCollision';
     }
 
-    // TODO: fix this push/pop scheme so it doesn' clear all the collidables
     for (var i = 0; i < collidables.length; i++) {
       var collidable = collidables[i];
 
@@ -92,13 +90,12 @@ var ball = {
     this.y = this.y - this.yVelocity;
 
     context.beginPath();
-    context.arc(this.x, this.y, 10, 0, Math.PI*2, true);
+    context.arc(this.x, this.y, this.radius, 0, Math.PI*2, true);
     context.fillStyle = 'green';
     context.fill();
   }
 };
 
-// TODO: Destroyable block
 function Block(x, y) {
   this.x = x;
   this.y = y;
@@ -118,7 +115,7 @@ function Block(x, y) {
     var inYRange = ball.y >= this.y && ball.y <= this.y + this.height;
 
     if (inXRange && inYRange) {
-      if (ball.x === this.x) {
+      if (ball.x === this.x || ball.x === this.x + this.width) {
         return 'verticalCollision';
       } else if (ball.y === (this.y + this.height)) {
         return 'horizontalCollision';
@@ -172,6 +169,8 @@ function draw(context) {
   collidables.forEach(function(collidable) {
     if (collidable.block === true) {
       blockCount++;
+      collidable.draw(context);
+    } else if (collidable.block === undefined) {
       collidable.draw(context);
     }
   });
